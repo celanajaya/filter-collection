@@ -35,7 +35,7 @@
     
     self.navigationController.title = @"Filter Photos";
     [self.collectionView setPrefetchingEnabled:NO];
-
+    
     self.imageManager = [[PHCachingImageManager alloc] init];
     self.imageAssets = [[NSMutableArray alloc] init];
     self.previousPreheatRect = self.collectionView.bounds;
@@ -100,62 +100,62 @@
     
     PHAsset *asset = self.imageAssets[indexPath.item];
     int requestID = [self.imageManager requestImageForAsset:asset
-                                                  targetSize:CGSizeMake(100, 100)
-                                                 contentMode:PHImageContentModeAspectFill
-                                                     options:nil
-                                               resultHandler:^(UIImage *result, NSDictionary *info) {
-                                                   if (result) {
-                                                       __block FilterCollectionViewCell *destinationCell;
-                                                       //if filters are on, filter the image on a background thread and display when ready
-                                                       if (self.currentFilter != nil) {
-                                                           
-                                                           //cancel/remove any older requests for this image
-                                                           int request = (int)info[@"PHImageResultRequestIDKey"];
-                                                           NSBlockOperation *filterOperation = self.currentFilterOperations[[@(request) stringValue]];
-                                                           [self.currentFilterOperations removeObjectForKey:[@(requestID) stringValue]];
-                                                           [filterOperation cancel];
-                                                           
-                                                           NSBlockOperation *operation = [[NSBlockOperation alloc] init];
-                                                           __weak NSBlockOperation *weakOperation = operation;
-                                                           //operations are saved in self.currentFilterOpertaions array, use weakSelf
-                                                           __weak PhotoCollectionViewController *weakSelf = self;
-                                                           
-                                                           [operation addExecutionBlock:^{
-                                                               //apply filters
-                                                               CIImage *inImage = [CIImage imageWithCGImage:result.CGImage];
-                                                               CIFilter *filter = [CIFilter filterWithName:weakSelf.currentFilter keysAndValues:
-                                                                                   kCIInputImageKey, inImage,
-                                                                                   nil];
-                                                               
+                                                 targetSize:CGSizeMake(100, 100)
+                                                contentMode:PHImageContentModeAspectFill
+                                                    options:nil
+                                              resultHandler:^(UIImage *result, NSDictionary *info) {
+                                                  if (result) {
+                                                      __block FilterCollectionViewCell *destinationCell;
+                                                      //if filters are on, filter the image on a background thread and display when ready
+                                                      if (self.currentFilter != nil) {
+                                                          
+                                                          //cancel/remove any older requests for this image
+                                                          int request = (int)info[@"PHImageResultRequestIDKey"];
+                                                          NSBlockOperation *filterOperation = self.currentFilterOperations[[@(request) stringValue]];
+                                                          [self.currentFilterOperations removeObjectForKey:[@(requestID) stringValue]];
+                                                          [filterOperation cancel];
+                                                          
+                                                          NSBlockOperation *operation = [[NSBlockOperation alloc] init];
+                                                          __weak NSBlockOperation *weakOperation = operation;
+                                                          //operations are saved in self.currentFilterOpertaions array, use weakSelf
+                                                          __weak PhotoCollectionViewController *weakSelf = self;
+                                                          
+                                                          [operation addExecutionBlock:^{
+                                                              //apply filters
+                                                              CIImage *inImage = [CIImage imageWithCGImage:result.CGImage];
+                                                              CIFilter *filter = [CIFilter filterWithName:weakSelf.currentFilter keysAndValues:
+                                                                                  kCIInputImageKey, inImage,
+                                                                                  nil];
+                                                              
                                                               CIImage *outImage = [filter outputImage];
-                                                               
+                                                              
                                                               CGImageRef cgimageref = [[CIContext contextWithOptions:nil] createCGImage:outImage fromRect:[outImage extent]];
-                                                               //check if operation is still needed
-                                                               if ([weakOperation isCancelled]) {return;}
-                                                               
-                                                               __block UIImage *filteredImage = [UIImage imageWithCGImage:cgimageref];
-                                                               [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                                   destinationCell = (FilterCollectionViewCell *)[weakSelf.collectionView cellForItemAtIndexPath: indexPath];
-                                                                   [weakSelf.currentFilterOperations removeObjectForKey:[@(destinationCell.tag) stringValue]];
-                                                                   if (destinationCell) {
-                                                                       destinationCell.imageView.image = filteredImage;
-                                                                   }
-                                                               }];
-                                                           }];
-                                                           
-                                                           //save filter operations to a dictionary for cancellation
-                                                           [self.currentFilterOperations setValue:operation forKey:[@(request) stringValue]];
-                                                           [self.filterQueue addOperation:operation];
-                                                           
-                                                       } else {
-                                                           //otherwise just set the image
-                                                           destinationCell = (FilterCollectionViewCell *)[collectionView cellForItemAtIndexPath: indexPath];
-                                                           if (destinationCell) {
-                                                               destinationCell.imageView.image = result;
-                                                           }
-                                                       }
-                                                   }
-                                               }];
+                                                              //check if operation is still needed
+                                                              if ([weakOperation isCancelled]) {return;}
+                                                              
+                                                              __block UIImage *filteredImage = [UIImage imageWithCGImage:cgimageref];
+                                                              [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                                  destinationCell = (FilterCollectionViewCell *)[weakSelf.collectionView cellForItemAtIndexPath: indexPath];
+                                                                  [weakSelf.currentFilterOperations removeObjectForKey:[@(destinationCell.tag) stringValue]];
+                                                                  if (destinationCell) {
+                                                                      destinationCell.imageView.image = filteredImage;
+                                                                  }
+                                                              }];
+                                                          }];
+                                                          
+                                                          //save filter operations to a dictionary for cancellation
+                                                          [self.currentFilterOperations setValue:operation forKey:[@(request) stringValue]];
+                                                          [self.filterQueue addOperation:operation];
+                                                          
+                                                      } else {
+                                                          //otherwise just set the image
+                                                          destinationCell = (FilterCollectionViewCell *)[collectionView cellForItemAtIndexPath: indexPath];
+                                                          if (destinationCell) {
+                                                              destinationCell.imageView.image = result;
+                                                          }
+                                                      }
+                                                  }
+                                              }];
     cell.tag = requestID;
     return  cell;
 }

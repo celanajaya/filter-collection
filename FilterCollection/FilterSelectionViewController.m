@@ -23,20 +23,20 @@
     self.navigationItem.title = @"Choose a Filter";
     self.clearsSelectionOnViewWillAppear = NO;
     self.filterList = @[@"CIColorCrossPolynomial",
-                       @"CIColorCube",
-                       @"CIColorCubeWithColorSpace",
-                       @"CIColorInvert",
-                       @"CIColorMonochrome",
-                       @"CIColorPosterize",
-                       @"CIFalseColor",
-                       @"CIMaximumComponent",
-                       @"CIMinimumComponent",
-                       @"CIPhotoEffectChrome",
-                       @"CIPhotoEffectFade",
-                       @"CIPhotoEffectInstant",
-                       @"CIPhotoEffectMono",
-                       @"CIPhotoEffectNoir",
-                       @"CIPhotoEffectProcess"];
+                        @"CIColorCube",
+                        @"CIColorCubeWithColorSpace",
+                        @"CIColorInvert",
+                        @"CIColorMonochrome",
+                        @"CIColorPosterize",
+                        @"CIFalseColor",
+                        @"CIMaximumComponent",
+                        @"CIMinimumComponent",
+                        @"CIPhotoEffectChrome",
+                        @"CIPhotoEffectFade",
+                        @"CIPhotoEffectInstant",
+                        @"CIPhotoEffectMono",
+                        @"CIPhotoEffectNoir",
+                        @"CIPhotoEffectProcess"];
 }
 
 - (void)didReceiveMemoryWarning {
