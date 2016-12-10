@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FilterSelectionDelegate.h"
 
-@interface ViewController : UIViewController
+@interface PhotoCollectionViewController : UIViewController <FilterSelectionDelegate>
 
 
 @end
